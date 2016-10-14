@@ -1,0 +1,6 @@
+{
+  "name": "Capstoneresearch",
+  "tagline": "Looking at Post Quantum Cryptography and its applications to Bitcoin and other Cryptocurrencies",
+  "body": "### Welcome to my Capstone Research Blog.\r\nThis is where I will be posting my weekly research related to a post-quantum implementation of Bitcoin. In this blog I will be looking into various topics including post-quantum signatures, effects of quantum computing on Bitcoin, benefits of switching to post-quantum algorithms, how to integrate a backwards compatible post-quantum algorithm into the Bitcoin protocol, and whatever other topics come up.\r\n\r\n### Members\r\nReid Bixler (Researcher)\r\n\r\nDavid Evans (Technical Thesis Advisor)\r\n\r\n### Contact\r\nIf you have any questions or would like to contact us about my research, feel free to email either me or my technical advisor: {rmb3yz, evans}@virginia.edu",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
