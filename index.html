@@ -1,37 +1,25 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en-us">
   <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Capstoneresearch : Looking at Post Quantum Cryptography and its applications to Bitcoin and other Cryptocurrencies">
-
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>Capstone Research</title>
+    <meta charset="UTF-8">
+    <title>Capstoneresearch by ReidBix</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
-
   <body>
+    <section class="page-header">
+      <h1 class="project-name">Capstoneresearch</h1>
+      <h2 class="project-tagline">Looking at Post Quantum Cryptography and its applications to Bitcoin and other Cryptocurrencies</h2>
+      <a href="https://github.com/ReidBix/CapstoneResearch" class="btn">View on GitHub</a>
+      <a href="https://github.com/ReidBix/CapstoneResearch/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/ReidBix/CapstoneResearch/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/ReidBix/CapstoneResearch">View on GitHub</a>
-
-          <h1 id="project_title">Capstoneresearch</h1>
-          <h2 id="project_tagline">Looking at Post Quantum Cryptography and its applications to Bitcoin and other Cryptocurrencies</h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/ReidBix/CapstoneResearch/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/ReidBix/CapstoneResearch/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h3>
+    <section class="main-content">
+      <h3>
 <a id="welcome-to-my-capstone-research-blog" class="anchor" href="#welcome-to-my-capstone-research-blog" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Welcome to my Capstone Research Blog.</h3>
 
 <p>This is where I will be posting my weekly research related to a post-quantum implementation of Bitcoin. In this blog I will be looking into various topics including post-quantum signatures, effects of quantum computing on Bitcoin, benefits of switching to post-quantum algorithms, how to integrate a backwards compatible post-quantum algorithm into the Bitcoin protocol, and whatever other topics come up.</p>
@@ -51,7 +39,49 @@
 <hr>
 
 <h2>
-<a id="post-quantum-bitcoin-analysis" class="anchor" href="#post-quantum-bitcoin-analysis" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post-Quantum Bitcoin Analysis</h2>
+<a id="bitcoin-locking-and-unlocking-script-alterations" class="anchor" href="#bitcoin-locking-and-unlocking-script-alterations" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Bitcoin Locking and Unlocking Script Alterations</h2>
+
+<h3>
+<a id="101416---102816" class="anchor" href="#101416---102816" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>10/14/16 - 10/28/16</h3>
+
+<h2>
+<a id="current-structure" class="anchor" href="#current-structure" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Current Structure</h2>
+
+<p>The current Bitcoin protocol is implemented in GoLang but it also has it's own Scripting language. This Scripting language is a number of Opcodes which are <em>NOT</em> Turing complete because there is no need for the language to be more complex than it needs to be, but also because a non-Turing complete language won't have loops and therefore won't have the case of the Halting Problem. If you do not know what the Halting Problem is, it is simply finding out whether or not a program will finish or not, and the introduction of loops can make a program go on infinitely. If the Bitcoin Scripting language doesn't have loops, then there is a guarantee that no program in the Bitcoin software will get stuck on a script that loops on forever. In the past there were a few Opcodes from the Bitcoin Scripting language that were removed for security reasons. For example, there used to be a simple <code>OP_RETURN</code> which had the potential to break the entire structure of Bitcoin because by passing it along with a 1 one could validate any transaction without the public key or signature (Obviously a security flaw in software intended to hold monetary value).</p>
+
+<h2>
+<a id="the-current-scripting-language" class="anchor" href="#the-current-scripting-language" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>The Current Scripting Language</h2>
+
+<p>How does the current Bitcoin Scripting Language (literally known as <code>Script</code>) work? It is a simple stack-based protocol that moves from left to right. What this means is that a user will give a Script as a list of instructions which will move items on and off of a stack. In terms of actual uses, if an Unlocking and Locking script are given, then a final stack with True on top (assuming a correct implementation of scripts) will grant access to transferred Bitcoin. The Script will contain, as stated before, opcodes, also known as <code>Words</code> which have the ability to manipulate the current stack. The words themselves look like <code>OP_NOP</code>, <code>OP_PUSHDATA1</code>, etc. but have numbers (opcodes) associated with them such as <code>97</code>, <code>76</code>, etc. respectively. There are some very complex checks of cryptography implemented into some of these words including public key verification with signatures (<code>OP_CHECKSIG</code>), RIPEMD-160 (<code>OP_RIPEMD160) and SHA256 (</code>OP_SHA256<code>) hashing, and verifying multiple public keys with multiple signatures (</code>OP_CHECKMULTISIG`). These are the core of the scripting language and are mostly what define the 5 sets of valid Locking and Unlocking Scripts.</p>
+
+<p>What are these Locking and Unlocking Scripts anyway? These are the scripts, when in combination, that validate transactions on the Bitcoin blockchain. The Locking Script is a combination of hashing, the public Bitcoin address, and checks for the signature (Specifically, <code>OP_DUP OP_HASH160 &lt;pubKeyHash&gt; OP_EQUALVERIFY OP_CHECKSIG</code> in one case). This Locking Script is often called <code>scriptPubKey</code>. For each Locking Script, there must be a valid Unlocking script that combines the signature and public key of the sending party (For the previous example, <code>&lt;sig&gt; &lt;pubKey&gt;</code> are passed). This Unlocking Script is often called <code>scriptSig</code>. With these two scripts, transactions are able to be validated on the stack by verifying the signature and public key hash, and without those the transaction won't be validated. Specifically, the Locking script is a type of "lock" placed on the outputs of a transaction that won't allow the output to be spent without the verification of the "key" (i.e. Unlocking Script). Every Bitcoin client intending to verify all the transactions must take the given Locking Script on the inputs run the Unlocking Script (given with the input itself) and execute the scripts together. However, there is not just one way to run Locking and Unlocking Scripts, in fact there are multiple. The one referenced previously is known as a Pay-to-Public-Key-Hash (P2PKH) because it is paying to the hash of a public key. This is predominantly used in the blockchain, but there do exist other payment methods like Pay-to-Public-Key (P2PK) and Multi-Signature.</p>
+
+<p>One large thing of note is that P2PK will become completely invalidated if quantum computers become available. The reasoning behind this is that P2PK assumes that the outputs are locked with the Public Key (Like so, <code>&lt;Public Key A&gt; OP_CHECKSIG</code>) which in a "quantum world" would be 'easy' to break and find the private key for. If somebody wants to steal money from this address they would have to simply give the signature from the private key (Like so, <code>&lt;Signature from Private Key A&gt;</code>) which would grant access to the stored Bitcoin. At least in the P2PKH instance, the Locking script runs on top of the Bitcoin address (a hashed version of the public key), which would make it 'hard' to find the public key, and therefore 'hard' to break and find the private key. Therefore, up until the Unlocking Script is run (and the Public Key is broadcasted by the intended recipient), any Bitcoin outputs will be safe from quantum-attack <em>ASSUMING</em> that the Public Key has not yet been broadcasted.</p>
+
+<h2>
+<a id="bliss-integration" class="anchor" href="#bliss-integration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>BLISS Integration</h2>
+
+<p>As talked about in our previous post, BLISS will be our desired post-quantum signature for the Bitcoin protocol. The big question is how we can ensure that this signature is being verified alongside the original signature. We want to be able to create Scripts that simultaneously verify the ECDSA signature as well as the BLISS signature, and guarantee a failure if either fails (specifically the case when ECDSA succeeds and BLISS fails, which would be a sign of a quantum-attack). The largest problem right now is simply the fact that the <code>Script</code> does not yet contain Opcodes for verifying a BLISS signature. Until an Opcode for this verification is available, there can be no unlocking or locking scripts that can ensure security against quantum computers. However, in this case, I am going to move forward assuming that there exists a word known as <code>OP_CHECKBLISS</code> which when given a stack of <code>&lt;PUB KEY BLISS&gt; &lt;SIG BLISS&gt;</code> will return a result of <code>TRUE</code> on the stack (essentially verifying that the public key shown is generated from the same private key of the signature).</p>
+
+<p>We can now go about determining what would be the best course of action for creating a valid Unlocking and Locking Script with the given Opcode. Simply, we will be having our Unlocking script have both our Public Keys and Signatures from ECDSA and BLISS, and our Locking Script will have our verifications first of the ECDSA then of the BLISS, and finally comparing those two outputs to determine if they are both true (a simple AND instruction). With this in place, we can ensure that any transaction containing Locked with these Scripts will only be unlocked with a valid and quantum-secure BLISS signature.</p>
+
+<h2>
+<a id="interesting-thingsprevious-research" class="anchor" href="#interesting-thingsprevious-research" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Interesting Things/Previous Research</h2>
+
+<p>It turns out that earlier this year a man by the name of Leon Groot Bruinderink released a paper on possible side-channel attacks on an implementation of post-quantum Bitcoin that uses the BLISS protocol. That paper can be found here (<a href="http://www.leongb.nl/wp-content/uploads/2016/03/Thesis.pdf">http://www.leongb.nl/wp-content/uploads/2016/03/Thesis.pdf</a>). This is an extremely interesting look at the possible types of attacks on our potential implementation of BLISS into Bitcoin, as well as the possible ways to prevent such attacks.</p>
+
+<h2>
+<a id="other-sources" class="anchor" href="#other-sources" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
+
+<ul>
+<li><a href="http://chimera.labs.oreilly.com/books/1234000001802/ch05.html#p2pkh">http://chimera.labs.oreilly.com/books/1234000001802/ch05.html#p2pkh</a></li>
+<li><a href="https://en.bitcoin.it/wiki/Script">https://en.bitcoin.it/wiki/Script</a></li>
+</ul>
+
+<hr>
+
+<h2>
+<a id="post-quantum-implementation-into-bitcoin-analysis" class="anchor" href="#post-quantum-implementation-into-bitcoin-analysis" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Post-Quantum Implementation into Bitcoin Analysis</h2>
 
 <h3>
 <a id="93016---101416" class="anchor" href="#93016---101416" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>9/30/16 - 10/14/16</h3>
@@ -75,7 +105,7 @@
 <p>Once our two keys A and S are generated, we can hash them down with a chosen hashing scheme (SHA-256, BLAKE-256, HAVAL etc.) that guarantees an ECDSA sized private key (256 bits). I intend to look into creating an example of this for a later post. In the best case, we can ensure the complete security of Bitcoin, while still maintaining the current functionality of the protocol.</p>
 
 <h2>
-<a id="other-sources" class="anchor" href="#other-sources" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
+<a id="other-sources-1" class="anchor" href="#other-sources-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
 
 <ul>
 <li><a href="http://www.bitcoinnotbombs.com/bitcoin-vs-the-nsas-quantum-computer/">http://www.bitcoinnotbombs.com/bitcoin-vs-the-nsas-quantum-computer/</a></li>
@@ -197,7 +227,7 @@
 <p>There exist quite a number of signature schemes that have proven to be quantum resistant. In terms of applications, the most likely forms we may use will be Lattice-Based or Multivariate signature schemes. However, the biggest problem that we will see in the implementation of quantum resistant signatures are the large key sizes in comparison to current key sizes. This means that many protocols will need to be changed to work with the new signature schemes, as introduced in the suggestion of Transport Layer Security (TLS) and Internet Key Exchange (IKE). Another problem that remains to be solved is the fact that many of these quantum resistant algorithms are not guaranteed to be quantum resistant. To better explain, the only reason why some algorithms like RSA and ECDSA are provably broken by quantum computing is because of the creation of Shor’s Algorithm which shows that quantum will break the foundation of prime factorization. The current post-quantum algorithms rely on both a NP-Hard problem as well as not having a quantum algorithm that breaks that hardness. While there currently do not exist any solutions to Lattice-Based or Multivariate problems with quantum computing, that does not mean that there will not exist such algorithms in the future. The security of all these quantum-resistant schemes are based on the assumption that there will not be an algorithm found to break the schemes. Regardless of this, striving to improve the security of the internet and technology is paramount. These quantum algorithms hold just as much security as current cryptographic algorithms do today, because they are based on NP-Hard problems that have no solutions capable of breaking the security of the algorithms.</p>
 
 <h2>
-<a id="other-sources-1" class="anchor" href="#other-sources-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
+<a id="other-sources-2" class="anchor" href="#other-sources-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
 
 <ul>
 <li><a href="https://eprint.iacr.org/2004/297.pdf">https://eprint.iacr.org/2004/297.pdf</a></li>
@@ -205,18 +235,15 @@
 <li>
 <a href="http://www.di.ens.fr/%7Educas/NTRUSign_Cryptanalysis/DucasNin">http://www.di.ens.fr/~ducas/NTRUSign_Cryptanalysis/DucasNin</a> guyen_Learning.pdf</li>
 </ul>
-      </section>
-    </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Capstoneresearch maintained by <a href="https://github.com/ReidBix">ReidBix</a></p>
-        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/ReidBix/CapstoneResearch">Capstoneresearch</a> is maintained by <a href="https://github.com/ReidBix">ReidBix</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
-    </div>
 
-    
+    </section>
 
+  
   </body>
 </html>
