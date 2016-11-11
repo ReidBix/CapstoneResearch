@@ -39,6 +39,47 @@
 <hr>
 
 <h2>
+<a id="bliss-bitcoin-protocol-specifications" class="anchor" href="#bliss-bitcoin-protocol-specifications" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>BLISS Bitcoin Protocol Specifications</h2>
+
+<h3>
+<a id="102816---111116" class="anchor" href="#102816---111116" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>10/28/16 - 11/11/16</h3>
+
+<h2>
+<a id="required-changes" class="anchor" href="#required-changes" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Required Changes</h2>
+
+<p>As stated in the last post, we are going to have to end up adding an opcode to Script in order to properly check BLISS signatures. This opcode will be known as <code>OP_CHECKBLISS</code> which will take a public key from BLISS and a signature from BLISS to verify if they match together. The problem now is deciding how we are going to protect our Bitcoin <strong>before</strong> the Bitcoin community decides to switch over to use the BLISS protocol. At the moment, we have 2 options, both of which have their pros and cons.</p>
+
+<p>First, we can 'burn' our Bitcoin by running a Locking Script with BLISS integration on some previously non-BLISS protected Bitcoin. Assuming that a node and the blockchain are willing to accept this transaction, your Bitcoin will now be completely locked into that new account without possibility of removal <em>UNTIL</em> the Bitcoin community does a fork to allow for using BLISS Unlocking and Locking Scripts. The benefits of running this is a complete guarantee that your Bitcoin cannot be stolen by a quantum computer, regardless of the state of the current blockchain's integration with BLISS. The obvious negative of this is your Bitcoin is completely unusable until the fork to the new protocol, hence 'burning' your Bitcoin. In the absolute worst case scenario, the Bitcoin community never forks to the new protocol leaving your Bitcoin stuck with an unlockable output because of your attempted protection against quantum attack.</p>
+
+<p>Second, we can keep the original protocol, but add in our BLISS integration as a part of the message included in transactions. For example, we generate a BLISS private key and use that private key to create our ECDSA private key, which is then used to create a new public address to send Bitcoin to. This address is sent money using the old P2PKH Locking Script, but we also end up adding our BLISS public address into the message, but don't integrate it into the Locking Script. We could say with that message "Please don't validate transactions from this address without verifying the BLISS signature". When the Bitcoin community forks to the new Locking and Unlocking scripts, all of these 'new' transactions already contain the BLISS integration, which means that they can be quickly ported over to the new protocol without required switching. The benefits of this form is that your Bitcoin will be still completely spendable throughout the entire process, but has the added benefit of the BLISS protection when the community switches over. The negatives of this are that a message saying "Please don't steal this" wouldn't particularly stop somebody intending to steal Bitcoin with a quantum computer, and your Bitcoin is not 'technically' safe from a quantum attack until the Bitcoin community integrates with BLISS.</p>
+
+<h2>
+<a id="consequences-of-bliss-integration" class="anchor" href="#consequences-of-bliss-integration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Consequences of BLISS Integration</h2>
+
+<p>Now that we understand what are the possibilities for switching over to BLISS, what are going to be the consequences? With new Unlocking and Locking scripts, we introduce yet another form of possible transactions in Bitcoin. These transactions will be only useful assuming a BLISS private key can be generated and used by the users, which will require a change of software for many Bitcoin clients, assuming they desire the protection from quantum attack. In terms of previous addresses and previous transactions, we cannot end up blocking old Unlocking and Locking scripts, because then you would be 'deleting' old Bitcoin by leaving them in addresses to never be used again. This means that we <strong>must</strong> be able to use the old Locking and Unlocking scripts, even if they are technically not secure from quantum attack if the transaction does not use change addresses. It will be up to the individual owners of Bitcoin to switch over to the new protocol, with the risk of not switching being the possibility of having your Bitcoin stolen.</p>
+
+<p>In terms of actual requirements set by Bitcoin for a <strong>standard transaction</strong>, are as follows:</p>
+
+<ul>
+<li><p>The transaction must be smaller than 100,000 bytes. That’s around 200 times larger than a typical single-input, single-output P2PKH transaction.</p></li>
+<li><p>Each of the transaction’s signature scripts must be smaller than 1,650 bytes. That’s large enough to allow 15-of-15 multisig transactions in P2SH using compressed public keys.</p></li>
+<li><p>The transaction’s signature script must only push data to the script evaluation stack. It cannot push new opcodes, with the exception of opcodes which solely push data to the stack.</p></li>
+</ul>
+
+<p>Assuming that we are using BLISS-IV (see previous blog post for BLISS document containing protocol specifications), we are going to have a signature size of 6.5KB, a private key size of 3KB, and a public key size of 7KB. If you do not already know, 1KB is approximately 1000 bytes. This means that adding in any of the BLISS keys or signatures for a single transaction between two parties is completely doable, albeit limiting on the current protocol. As of now, the average single input to single output transaction will require 500 bytes or 0.5KB. By adding on the public key and signature from BLISS, we will be requiring approximately 14KB per transaction (assuming single to single), this would include the 500 bytes from normal ECDSA, 6.5KB for the signature, and 7KB for the public key. At the current standard, this means that we will only be able to fit around 7 inputs and outputs to a transaction, assuming they are all using the BLISS protocol. This is a pretty huge jump in terms of size requirements for Bitcoin (~200 to ~7 is a factor of nearly 30). What about speed requirements? The only thing that we will be verifying is the signature of ECDSA and the signature of BLISS. The act of signing in BLISS-IV requires about 0.375ms while a ECDSA-256 requires about 0.106ms. Luckily signing is not actually required by a node for a list of transactions, signing is only done by the individual users. Verification for BLISS-IV requires 0.032ms while a ECDSA-256 requires about 0.384ms. This means that we can verify about 31,000 transactions in a second with BLISS-IV at the same time that we could verify about 2,500 in a second transactions with ECDSA-256. This is extremely useful when integrating into the Bitcoin protocol because then we can know that speed will not be an issue created from this integration. However, notably the size will likely become an issue, requiring possibly an increase later in the future, especially considering that there are arguments going on currently about the maximum blocksize of 1MB being too small (only allowing for about 3-4 transactions per second).</p>
+
+<p>Obviously we are going to have to look more at the consequences of real-time use of BLISS once integrated into Bitcoin, which is why I will eventually be creating a local implementation for testing purposes and setting benchmarks. It's also entirely possible that an even better post-quantum signature scheme may arrive in the future with more security, less size requirements, and faster signing times. However, at the moment, BLISS is what we are looking towards for post-quantum security for Bitcoin. </p>
+
+<h2>
+<a id="other-sources" class="anchor" href="#other-sources" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
+
+<p><a href="https://bitcoin.org/en/developer-guide#non-standard-transactions">https://bitcoin.org/en/developer-guide#non-standard-transactions</a>
+<a href="https://en.bitcoin.it/wiki/Protocol_documentation">https://en.bitcoin.it/wiki/Protocol_documentation</a>
+<a href="https://en.bitcoin.it/wiki/Block_size_limit_controversy">https://en.bitcoin.it/wiki/Block_size_limit_controversy</a></p>
+
+<hr>
+
+<h2>
 <a id="bitcoin-locking-and-unlocking-script-alterations" class="anchor" href="#bitcoin-locking-and-unlocking-script-alterations" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Bitcoin Locking and Unlocking Script Alterations</h2>
 
 <h3>
@@ -71,7 +112,7 @@
 <p>It turns out that earlier this year a man by the name of Leon Groot Bruinderink released a paper on possible side-channel attacks on an implementation of post-quantum Bitcoin that uses the BLISS protocol. That paper can be found here (<a href="http://www.leongb.nl/wp-content/uploads/2016/03/Thesis.pdf">http://www.leongb.nl/wp-content/uploads/2016/03/Thesis.pdf</a>). This is an extremely interesting look at the possible types of attacks on our potential implementation of BLISS into Bitcoin, as well as the possible ways to prevent such attacks.</p>
 
 <h2>
-<a id="other-sources" class="anchor" href="#other-sources" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
+<a id="other-sources-1" class="anchor" href="#other-sources-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
 
 <ul>
 <li><a href="http://chimera.labs.oreilly.com/books/1234000001802/ch05.html#p2pkh">http://chimera.labs.oreilly.com/books/1234000001802/ch05.html#p2pkh</a></li>
@@ -105,7 +146,7 @@
 <p>Once our two keys A and S are generated, we can hash them down with a chosen hashing scheme (SHA-256, BLAKE-256, HAVAL etc.) that guarantees an ECDSA sized private key (256 bits). I intend to look into creating an example of this for a later post. In the best case, we can ensure the complete security of Bitcoin, while still maintaining the current functionality of the protocol.</p>
 
 <h2>
-<a id="other-sources-1" class="anchor" href="#other-sources-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
+<a id="other-sources-2" class="anchor" href="#other-sources-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
 
 <ul>
 <li><a href="http://www.bitcoinnotbombs.com/bitcoin-vs-the-nsas-quantum-computer/">http://www.bitcoinnotbombs.com/bitcoin-vs-the-nsas-quantum-computer/</a></li>
@@ -227,7 +268,7 @@
 <p>There exist quite a number of signature schemes that have proven to be quantum resistant. In terms of applications, the most likely forms we may use will be Lattice-Based or Multivariate signature schemes. However, the biggest problem that we will see in the implementation of quantum resistant signatures are the large key sizes in comparison to current key sizes. This means that many protocols will need to be changed to work with the new signature schemes, as introduced in the suggestion of Transport Layer Security (TLS) and Internet Key Exchange (IKE). Another problem that remains to be solved is the fact that many of these quantum resistant algorithms are not guaranteed to be quantum resistant. To better explain, the only reason why some algorithms like RSA and ECDSA are provably broken by quantum computing is because of the creation of Shor’s Algorithm which shows that quantum will break the foundation of prime factorization. The current post-quantum algorithms rely on both a NP-Hard problem as well as not having a quantum algorithm that breaks that hardness. While there currently do not exist any solutions to Lattice-Based or Multivariate problems with quantum computing, that does not mean that there will not exist such algorithms in the future. The security of all these quantum-resistant schemes are based on the assumption that there will not be an algorithm found to break the schemes. Regardless of this, striving to improve the security of the internet and technology is paramount. These quantum algorithms hold just as much security as current cryptographic algorithms do today, because they are based on NP-Hard problems that have no solutions capable of breaking the security of the algorithms.</p>
 
 <h2>
-<a id="other-sources-2" class="anchor" href="#other-sources-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
+<a id="other-sources-3" class="anchor" href="#other-sources-3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
 
 <ul>
 <li><a href="https://eprint.iacr.org/2004/297.pdf">https://eprint.iacr.org/2004/297.pdf</a></li>
