@@ -1,25 +1,42 @@
-<!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="UTF-8">
-    <title>Capstoneresearch by ReidBix</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-  </head>
-  <body>
-    <section class="page-header">
-      <h1 class="project-name">Capstoneresearch</h1>
-      <h2 class="project-tagline">Looking at Post Quantum Cryptography and its applications to Bitcoin and other Cryptocurrencies</h2>
-      <a href="https://github.com/ReidBix/CapstoneResearch" class="btn">View on GitHub</a>
-      <a href="https://github.com/ReidBix/CapstoneResearch/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/ReidBix/CapstoneResearch/tarball/master" class="btn">Download .tar.gz</a>
-    </section>
+<!doctype html>
+<!-- The Time Machine GitHub pages theme was designed and developed by Jon Rohan, on Feb 7, 2012. -->
+<!-- Follow him for fun. http://twitter.com/jonrohan. Tail his code on https://github.com/jonrohan -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    <section class="main-content">
-      <h3>
+  <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen">
+  <link rel="stylesheet" href="stylesheets/github-dark.css">
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="javascripts/script.js"></script>
+
+  <title>Capstoneresearch</title>
+  <meta name="description" content="Looking at Post Quantum Cryptography and its applications to Bitcoin and other Cryptocurrencies">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <header>
+      <h1 class="title">Capstoneresearch</h1>
+    </header>
+    <div id="container">
+      <p class="tagline">Looking at Post Quantum Cryptography and its applications to Bitcoin and other Cryptocurrencies</p>
+      <div id="main" role="main">
+        <div class="download-bar">
+        <div class="inner">
+          <a href="https://github.com/ReidBix/CapstoneResearch/tarball/master" class="download-button tar"><span>Download</span></a>
+          <a href="https://github.com/ReidBix/CapstoneResearch/zipball/master" class="download-button zip"><span>Download</span></a>
+          <a href="https://github.com/ReidBix/CapstoneResearch" class="code">View Capstoneresearch on GitHub</a>
+        </div>
+        <span class="blc"></span><span class="trc"></span>
+        </div>
+        <article class="markdown-body">
+          <h3>
 <a id="welcome-to-my-capstone-research-blog" class="anchor" href="#welcome-to-my-capstone-research-blog" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Welcome to my Capstone Research Blog.</h3>
 
 <p>This is where I will be posting my weekly research related to a post-quantum implementation of Bitcoin. In this blog I will be looking into various topics including post-quantum signatures, effects of quantum computing on Bitcoin, benefits of switching to post-quantum algorithms, how to integrate a backwards compatible post-quantum algorithm into the Bitcoin protocol, and whatever other topics come up.</p>
@@ -35,6 +52,179 @@
 <a id="contact" class="anchor" href="#contact" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Contact</h3>
 
 <p>If you have any questions or would like to contact us about my research, feel free to email either me or my technical advisor: {rmb3yz, evans}@virginia.edu</p>
+
+<hr>
+
+<h2>
+<a id="bliss-bitcoin-scripts" class="anchor" href="#bliss-bitcoin-scripts" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>BLISS Bitcoin Scripts</h2>
+
+<h3>
+<a id="111116---12916" class="anchor" href="#111116---12916" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>11/11/16 - 12/9/16</h3>
+
+<h2>
+<a id="using-bliss-to-burnlock-bitcoin" class="anchor" href="#using-bliss-to-burnlock-bitcoin" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Using BLISS to Burn/Lock Bitcoin</h2>
+
+<p>As of now, I have come up with two ways to completely lock Bitcoin in a Bitcoin address until BLISS gets integrated.</p>
+
+<h2>
+<a id="burnt-bliss" class="anchor" href="#burnt-bliss" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Burnt BLISS</h2>
+
+<p>The first of which is actually fairly simple, and doesn't even have to rely on BLISS. The security of this method relies on the fact that hashing will not be easily broken with quantum computers. Technically, anybody can create a random address that passes the checks of a valid address, but actually doesn't hash from a ECDSA public key. You could put together a string of 0's, a really interesting vanity address that obviously would be impossible to find (ex. "1YouWontBeAbleToGetThisAddress..."), or hash some made up public key. But for our case, we want to actually be able to use this Bitcoin once the Bitcoin Community (hopefully) switches over to the BLISS protocol. For this we can generate a BLISS private and public key, hash our public key, and use that hash just like any other address in our Locking Script.</p>
+
+<p>The locking script would look as so:</p>
+
+<p><code>OP_DUP</code> <code>OP_HASH160</code> <code>&lt;BlisskeyPubHash&gt;</code> <code>OP_EQUALVERIFY</code> <code>OP_CHECKSIG</code></p>
+
+<p>and our unlocking script would be:</p>
+
+<p><code>&lt;BlissSig&gt;</code> <code>&lt;BlissPubK&gt;</code></p>
+
+<p>Assuming that we only want to transfer our own coin into a locked BLISS address, we simply take that address and send money to it. The only way that this address could ever spend money are one of two ways.</p>
+
+<ol>
+<li><p>The Bitcoin Community alters the <code>OP_CHECKSIG</code> opcode to allow BLISS signature checking. The reason why we can't have a <code>OP_CHECKBLISS</code> in this case is it would require a fork beforehand, which this method is not relying on. It would be 'fairly' trivial to alter the <code>OP_CHECKSIG</code> code to check the length of the signature given to verify if an ECDSA or BLISS signature was used. </p></li>
+<li><p>ASSUMING that the Public Hash is a 'valid address' (i.e. starting with 1 or 3, indicating P2PKH and P2SH respectively), however unlikely considering a BLISS Public Key Hash would likely not have the same starting bytes as an ECDSA public key hash. Somebody breaks the RIPEMD hash algorithm and produces a hash collision with an ECDSA public key which can be used to validate the transaction.</p></li>
+</ol>
+
+<h3>
+<a id="benefits" class="anchor" href="#benefits" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Benefits</h3>
+
+<ul>
+<li>This can be done at anytime, even before the Bitcoin Community considers switching to BLISS</li>
+<li>Guaranteed security (assuming no hash-break) against quantum attack</li>
+<li>Usable once BLISS becomes integrated and requires 'minimal' changes in the protocol</li>
+</ul>
+
+<h3>
+<a id="drawbacks" class="anchor" href="#drawbacks" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Drawbacks</h3>
+
+<ul>
+<li>HIGH POSSIBILITY OF LOSING YOUR BITCOIN. Obviously this is a huge risk to put all of your faith into the assumption that the Bitcoin Community MAY end up integrating this in this exact way. Even if the Bitcoin Community decides to switch to BLISS, but does it another way, then your Bitcoin would still be lost!</li>
+<li>Requires altering an opcode, likely increasing the chance of security flaws. Adding an additional opcode like <code>OP_CHECKBLISS</code> would be great, but does not allow users of Bitcoin to protect their Bitcoin before the fact.</li>
+<li>If the Bitcoin Community chooses not to do this, then you are just adding an additional transaction on top of the blockchain that is totally useless and takes up unnecessary space.</li>
+</ul>
+
+<h3>
+<a id="considerations" class="anchor" href="#considerations" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Considerations</h3>
+
+<ul>
+<li>This is a very drastic measure for 'protecting' your Bitcoin with BLISS, and there are entirely more reasonable methods to protect your Bitcoin, most notably, just putting your Bitcoin into an address that has not been used before AND not spending any of those coins from that address. Assuming that hashing isn't broken, your ECDSA public key does not need to be published to the blockchain until you want to spend coins from an address, therefore protecting your Bitcoin from quantum attack until the Bitcoin Community implements a more reasonable protection. The only reason that you would prefer Burnt BLISS over this is if you think that you REALLY want to guarantee that a quantum attack won't steal your Bitcoin AND you want to leave Bitcoin in this address even after this method became implemented (which is highly unlikely). </li>
+</ul>
+
+<h2>
+<a id="scripted-burnt-bliss" class="anchor" href="#scripted-burnt-bliss" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Scripted Burnt BLISS</h2>
+
+<p>While I have done a lot of research on the Bitcoin protocol, I cannot guarantee that I know everything that is necessary to verify that this can be a valid method. The assumption that I am going to be making for this is that a RedeemScript can have a currently Reserved word/opcode without making it an invalid transaction. To explain why this assumption is necessary, we need to look at the Pay to Script Hash (P2SH). P2SH was added late into the development of Bitcoin to allow the recipients to create their own ways to ensure the security of the Bitcoin that they were receiving. The cool thing about P2SH is that the requirements to unlock funds could be a number of signatures, a password, or even the answer to a complicated math problem. In our case, the necessary 'key' will be our BLISS Public Key. However, the main component of our method will be the fact that our script can contain a currently invalid opcode. Technically, as of right now, if a node sees that a transaction is invalid then they will toss it aside and ignore it. However, if the invalid opcode is within a hash, then technically the transaction is 'valid' and becomes truly valid once the opcode becomes valid itself. This method is similar to our Burnt BLISS, but has a very interesting benefit of not requiring the alteration of <code>OP_CHECKSIG</code>. </p>
+
+<p>Let us consider our Redeem Script to be:</p>
+
+<p><code>&lt;BlissPubK&gt;</code> <code>OP_EQUALVERIFY</code> <code>OP_RESERVED1</code></p>
+
+<p>Our Locking Script will then be:</p>
+
+<p><code>OP_HASH160</code> <code>&lt;20-byte hash of Redeem Script&gt;</code> OP_EQUAL</p>
+
+<p>and our Unlocking Script will be:</p>
+
+<p><code>&lt;BlissSig&gt;</code> <code>&lt;Redeem Script&gt;</code></p>
+
+<p>Assuming once again that <code>OP_RESERVED1</code> is technically valid as long as it is hashed, then this Bitcoin will be locked into the script address given by the specific <code>&lt;BlissPubK&gt;</code> and cannot be unlocked until <code>OP_RESERVED1</code> becomes a valid opcode. This is similar to our previous Burnt BLISS but has the addition of not requiring the replacement of code in <code>OP_CHECKSIG</code>, instead we will rely on the Bitcoin Community to put our assumed <code>OP_CHECKBLISS</code> into the <code>OP_RESERVED1</code>. Once <code>OP_CHECKBLISS</code> is implemented, our previously locked address becomes spendable with our BLISS Signature. This is where my knowledge of the blockchain comes into question. I have looked as in depth as I could, but when I try to determine if having previously invalid opcodes in old blocks all I could find was this on the Bitcoin Wiki "you must ensure that adding this new opcode doesn't cause transactions that were once invalid to be valid." I am unsure if this means if a P2SH Redeem Script could or could not have an invalid opcode in it. From what I grasp, it means that an unaccepted and invalid transaction from before cannot now become valid transactions. Technically, this method is a completely valid transaction, since the Redeem Script is never publicly released beforehand.</p>
+
+<h3>
+<a id="benefits-1" class="anchor" href="#benefits-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Benefits</h3>
+
+<ul>
+<li>Similarly to Burnt BLISS, this can be done at anytime, even before the Bitcoin Community considers switching to BLISS</li>
+<li>Guaranteed security (assuming no hash-break) against quantum attack</li>
+<li>Usable once BLISS becomes integrated</li>
+<li>Doesn't require altering current opcodes</li>
+</ul>
+
+<h3>
+<a id="drawbacks-1" class="anchor" href="#drawbacks-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Drawbacks</h3>
+
+<ul>
+<li>HIGH POSSIBILITY OF LOSING YOUR BITCOIN. Obviously this is a huge risk to put all of your faith into the assumption that the Bitcoin Community MAY end up integrating this in this exact way. Even if the Bitcoin Community decides to switch to BLISS, but does it another way, then your Bitcoin would still be lost!</li>
+<li>Requires taking up a reserved opcode. Adding an additional opcode like <code>OP_CHECKBLISS</code> is extremely useful, but seeing as reserved opcodes are rare, it may be risky to give one up for the BLISS protocol</li>
+<li>If the Bitcoin Community chooses not to do this, then you are just adding an additional transaction on top of the blockchain that is totally useless and takes up unnecessary space.</li>
+</ul>
+
+<h3>
+<a id="considerations-1" class="anchor" href="#considerations-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Considerations</h3>
+
+<ul>
+<li>Similarly to the other burnt coin, this is a very drastic measure for 'protecting' your Bitcoin with BLISS. Admittedly, compared to Burnt BLISS, this method is 'more likely' to be accepted because there would not be alterations to current opcodes. Depending on if the Bitcoin Community wants more versatility with an opcode by changing <code>OP_CHECKSIG</code> or adding a new opcode over a reserved slot with <code>OP_CHECKBLISS</code> will determine what path is best.</li>
+</ul>
+
+<h2>
+<a id="how-to-slowly-integrate-bliss-into-bitcoin" class="anchor" href="#how-to-slowly-integrate-bliss-into-bitcoin" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to Slowly Integrate BLISS into Bitcoin</h2>
+
+<p>Technically, we will not be able to be able to 100% protect our Bitcoin from quantum attack unless we never spend from our final output address (by this I mean you can never have leftover Bitcoin in an address after a transaction, else you risk having it stolen from quantum attack) or use the previously mentioned burn tactics. Obviously, a lot of people still want to be able to constantly use their Bitcoin throughout, and nobody really would like to take the risk of burning their Bitcoin (or at least a majority of it). At the moment, I have considered a method that allows for the Bitcoin community to slowly integrate BLISS into the protocol, admittedly at the cost of speed and immediate security.</p>
+
+<h2>
+<a id="step-1-message-bliss" class="anchor" href="#step-1-message-bliss" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>STEP 1) Message BLISS</h2>
+
+<p>A simple way to 'protect' our Bitcoin from quantum attack would be to tell the Bitcoin not to accept transactions from an address without verifying a BLISS key. To do this, we can use the 40 additional bytes that can be tacked onto a transaction with <code>OP_RETURN</code>.</p>
+
+<p>Our Locking Script will look like any ordinary P2PKH with <code>OP_RETURN</code> on top:</p>
+
+<p><code>OP_DUP</code> <code>OP_HASH160</code> <code>&lt;PubKHash&gt;</code> <code>OP_EQUALVERIFY</code> <code>OP_CHECKSIG</code> <code>OP_RETURN</code> <code>&lt;Message&gt;</code></p>
+
+<p>Our Unlocking Script will be the normal P2PKH script:</p>
+
+<p><code>&lt;Sig&gt;</code> <code>&lt;PubK&gt;</code></p>
+
+<p>Our <code>&lt;Message&gt;</code> will contain something along the lines of "Please don't accept this transaction without verifying my BLISS public key available at ". This is obviously unlikely to stop many people from accepting the transaction, but in the worst case if your Bitcoin were stolen from quantum attack, then you could 'prove' that the transaction should be invalidated. However, given Bitcoin's previous stagnancy on reverting transactions, this will likely provide little protection.</p>
+
+<h2>
+<a id="step-2-forked-bliss" class="anchor" href="#step-2-forked-bliss" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>STEP 2) Forked BLISS</h2>
+
+<p>At this point, we can wait until the Bitcoin Community decides to do a soft or hard fork with BLISS included. We cannot assume in this case how they will do it, but the previous two possibilities of burning can be used for this new BLISS protection. In this case we have 2 options, replacing a reserved opcode for <code>OP_CHECKBLISS</code> or altering <code>OP_CHECKSIG</code> to allow for BLISS signatures. Once this is added, we have the opportunity to replace any P2PKH or P2SH with BLISS signatures and BLISS public keys. By waiting until a fork happens, we take away any risk that your Bitcoin ends up getting burnt through assumptions in changes of the protocol.</p>
+
+<h3>
+<a id="benefits-2" class="anchor" href="#benefits-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Benefits</h3>
+
+<ul>
+<li>Can still spend Bitcoin before forking to BLISS</li>
+<li>Guaranteed security once Step 2 is achieved</li>
+<li>Very low possibility of losing Bitcoin. Cannot lose Bitcoin through burnt addresses and can only lose it assuming a quantum attack happens before Step 2.</li>
+<li>Doesn't require altering current opcodes</li>
+</ul>
+
+<h3>
+<a id="drawbacks-2" class="anchor" href="#drawbacks-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Drawbacks</h3>
+
+<ul>
+<li>This requires the Bitcoin Community to eventually fork and make the BLISS changes necessary. Until Step 2, your Bitcoin are not guaranteed to be secure with a simple message.</li>
+<li>Taking risk that your address could be the reason why Bitcoin shifts to BLISS. By this, I mean that if and when a quantum computer user decides to attack a Bitcoin address, there will likely be some amount of Bitcoins stolen until the blockchain forks to the BLISS protocol. If your address has enough Bitcoin to warrant being attacked by a quantum computer, then you are more likely to lose your Bitcoin before the necessary changes take effect.</li>
+<li>Still requires changes to current code or a reserved opcode. Obviously it won't be possible to allow BLISS without doing some alteration to the Bitcoin protocol, and it is up to the community to decide which choice is best.</li>
+</ul>
+
+<h3>
+<a id="considerations-2" class="anchor" href="#considerations-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Considerations</h3>
+
+<ul>
+<li>One big consideration for this method is whether or not the Bitcoin Community should decide to phase out ECDSA entirely. The obvious drawback of phasing out ECDSA is that anybody with 'old' Bitcoin will no longer be able to use them. Even setting some period of time to switch over will still leave some people with Bitcoin stuck in addresses no longer accepted. Essentially, this would be a collective decision by the community to burn a portion of the entire Bitcoin into unspendable addresses. However, if ECDSA is used alongside BLISS then we need to start to consider whether or not they will be used together, alternatively, or through some other means. For example, should 'new' standard Locking and Unlocking scripts assume that both ECDSA and BLISS are going to be included, or the default be BLISS with ECDSA still being available? By maintaining ECDSA, no address will ever be locked out of using their Bitcoin, but they do end up taking the risk of having their Bitcoin stolen in the case of a quantum attack.</li>
+<li>Also, we need to consider what was brought up in the previous post due to the size of BLISS keys and signatures. The limits on transactions are drastically decreased once BLISS is added in, and the blockchain will only grow even larger. It makes sense to increase the standard block size from 1MB to something larger, but that is another major problem being currently debated today. Suffice to say, even if BLISS secures Bitcoin in technicality, it poses other social and economic problems within Bitcoin.</li>
+</ul>
+
+<h2>
+<a id="final-thoughts" class="anchor" href="#final-thoughts" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Final Thoughts</h2>
+
+<p>Protecting Bitcoin from potential attacks of quantum computers may seem like overkill, but when the foundation and value of Bitcoin is reliant on the security of its algorithms, we need to guarantee that those algorithms get replaced if proven to be insecure. Looking through alternative signature schemes, we decided to go with the Bimodal Lattice Signature Scheme (BLISS) as our intended post-quantum algorithm replacement for ECDSA. We have analyzed the necessary changes required from Bitcoin, the effects that it will have on the blockchain, and different steps to integrate BLISS into Bitcoin. Implementing these changes will definitely be considered drastic and have lasting effects on Bitcoin and the blockchain, which is why so much effort has been put into analyzing such effects. This concludes my first semester of research in Post-quantum Cryptocurrencies. Next semester I will be looking into implementing a local prototype of BLISS integrated Bitcoin using btcd (<a href="https://github.com/btcsuite/btcd">https://github.com/btcsuite/btcd</a>) and verifying the security, speed, and size requirements. Also I will be looking at possible alternative means of generating Gaussian curves to prevent side-channel attacks on the cache as brought up in the previously mentioned paper (<a href="http://www.leongb.nl/wp-content/uploads/2016/03/Thesis.pdf">http://www.leongb.nl/wp-content/uploads/2016/03/Thesis.pdf</a>). Hopefully by the end of next semester, the prototype will be up to the standard that it could technically be fully implemented into the main blockchain.</p>
+
+<h2>
+<a id="other-sources" class="anchor" href="#other-sources" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
+
+<p><a href="https://en.bitcoin.it/wiki/Proof_of_burn">https://en.bitcoin.it/wiki/Proof_of_burn</a>
+<a href="https://en.bitcoin.it/wiki/Softfork">https://en.bitcoin.it/wiki/Softfork</a>
+<a href="https://en.bitcoin.it/wiki/OP_RETURN">https://en.bitcoin.it/wiki/OP_RETURN</a>
+<a href="https://en.bitcoin.it/wiki/Script">https://en.bitcoin.it/wiki/Script</a>
+<a href="https://bitcoin.org/en/developer-guide">https://bitcoin.org/en/developer-guide</a>
+<a href="http://www.siliconian.com/blog/16-bitcoin-blockchain/26-deconstructing-bitcoin-transaction-part-2-op-return">http://www.siliconian.com/blog/16-bitcoin-blockchain/26-deconstructing-bitcoin-transaction-part-2-op-return</a>
+<a href="http://www.soroushjp.com/2014/12/20/bitcoin-multisig-the-hard-way-understanding-raw-multisignature-bitcoin-transactions/">http://www.soroushjp.com/2014/12/20/bitcoin-multisig-the-hard-way-understanding-raw-multisignature-bitcoin-transactions/</a>
+<a href="http://bitcoin.stackexchange.com/questions/9678/what-is-script-hash-address-exactly-and-how-does-it-work">http://bitcoin.stackexchange.com/questions/9678/what-is-script-hash-address-exactly-and-how-does-it-work</a>
+<a href="http://chimera.labs.oreilly.com/books/1234000001802/ch05.html">http://chimera.labs.oreilly.com/books/1234000001802/ch05.html</a></p>
 
 <hr>
 
@@ -71,7 +261,7 @@
 <p>Obviously we are going to have to look more at the consequences of real-time use of BLISS once integrated into Bitcoin, which is why I will eventually be creating a local implementation for testing purposes and setting benchmarks. It's also entirely possible that an even better post-quantum signature scheme may arrive in the future with more security, less size requirements, and faster signing times. However, at the moment, BLISS is what we are looking towards for post-quantum security for Bitcoin. </p>
 
 <h2>
-<a id="other-sources" class="anchor" href="#other-sources" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
+<a id="other-sources-1" class="anchor" href="#other-sources-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
 
 <p><a href="https://bitcoin.org/en/developer-guide#non-standard-transactions">https://bitcoin.org/en/developer-guide#non-standard-transactions</a>
 <a href="https://en.bitcoin.it/wiki/Protocol_documentation">https://en.bitcoin.it/wiki/Protocol_documentation</a>
@@ -112,7 +302,7 @@
 <p>It turns out that earlier this year a man by the name of Leon Groot Bruinderink released a paper on possible side-channel attacks on an implementation of post-quantum Bitcoin that uses the BLISS protocol. That paper can be found here (<a href="http://www.leongb.nl/wp-content/uploads/2016/03/Thesis.pdf">http://www.leongb.nl/wp-content/uploads/2016/03/Thesis.pdf</a>). This is an extremely interesting look at the possible types of attacks on our potential implementation of BLISS into Bitcoin, as well as the possible ways to prevent such attacks.</p>
 
 <h2>
-<a id="other-sources-1" class="anchor" href="#other-sources-1" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
+<a id="other-sources-2" class="anchor" href="#other-sources-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
 
 <ul>
 <li><a href="http://chimera.labs.oreilly.com/books/1234000001802/ch05.html#p2pkh">http://chimera.labs.oreilly.com/books/1234000001802/ch05.html#p2pkh</a></li>
@@ -146,7 +336,7 @@
 <p>Once our two keys A and S are generated, we can hash them down with a chosen hashing scheme (SHA-256, BLAKE-256, HAVAL etc.) that guarantees an ECDSA sized private key (256 bits). I intend to look into creating an example of this for a later post. In the best case, we can ensure the complete security of Bitcoin, while still maintaining the current functionality of the protocol.</p>
 
 <h2>
-<a id="other-sources-2" class="anchor" href="#other-sources-2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
+<a id="other-sources-3" class="anchor" href="#other-sources-3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
 
 <ul>
 <li><a href="http://www.bitcoinnotbombs.com/bitcoin-vs-the-nsas-quantum-computer/">http://www.bitcoinnotbombs.com/bitcoin-vs-the-nsas-quantum-computer/</a></li>
@@ -268,7 +458,7 @@
 <p>There exist quite a number of signature schemes that have proven to be quantum resistant. In terms of applications, the most likely forms we may use will be Lattice-Based or Multivariate signature schemes. However, the biggest problem that we will see in the implementation of quantum resistant signatures are the large key sizes in comparison to current key sizes. This means that many protocols will need to be changed to work with the new signature schemes, as introduced in the suggestion of Transport Layer Security (TLS) and Internet Key Exchange (IKE). Another problem that remains to be solved is the fact that many of these quantum resistant algorithms are not guaranteed to be quantum resistant. To better explain, the only reason why some algorithms like RSA and ECDSA are provably broken by quantum computing is because of the creation of Shor’s Algorithm which shows that quantum will break the foundation of prime factorization. The current post-quantum algorithms rely on both a NP-Hard problem as well as not having a quantum algorithm that breaks that hardness. While there currently do not exist any solutions to Lattice-Based or Multivariate problems with quantum computing, that does not mean that there will not exist such algorithms in the future. The security of all these quantum-resistant schemes are based on the assumption that there will not be an algorithm found to break the schemes. Regardless of this, striving to improve the security of the internet and technology is paramount. These quantum algorithms hold just as much security as current cryptographic algorithms do today, because they are based on NP-Hard problems that have no solutions capable of breaking the security of the algorithms.</p>
 
 <h2>
-<a id="other-sources-3" class="anchor" href="#other-sources-3" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
+<a id="other-sources-4" class="anchor" href="#other-sources-4" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Other Sources</h2>
 
 <ul>
 <li><a href="https://eprint.iacr.org/2004/297.pdf">https://eprint.iacr.org/2004/297.pdf</a></li>
@@ -276,15 +466,26 @@
 <li>
 <a href="http://www.di.ens.fr/%7Educas/NTRUSign_Cryptanalysis/DucasNin">http://www.di.ens.fr/~ducas/NTRUSign_Cryptanalysis/DucasNin</a> guyen_Learning.pdf</li>
 </ul>
+        </article>
+      </div>
+    </div>
+    <footer>
+      <div class="owner">
+      <p><a href="https://github.com/ReidBix" class="avatar"><img src="https://avatars0.githubusercontent.com/u/7086521?v=3&amp;s=60" width="48" height="48"></a> <a href="https://github.com/ReidBix">ReidBix</a> maintains <a href="https://github.com/ReidBix/CapstoneResearch">Capstoneresearch</a></p>
 
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/ReidBix/CapstoneResearch">Capstoneresearch</a> is maintained by <a href="https://github.com/ReidBix">ReidBix</a>.</span>
 
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
-      </footer>
-
-    </section>
+      </div>
+      <div class="creds">
+        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br>theme by <a href="https://twitter.com/jonrohan/">Jon Rohan</a></small>
+      </div>
+    </footer>
+  </div>
+  <div class="current-section">
+    <a href="#top">Scroll to top</a>
+    <a href="https://github.com/ReidBix/CapstoneResearch/tarball/master" class="tar">tar</a><a href="https://github.com/ReidBix/CapstoneResearch/zipball/master" class="zip">zip</a><a href="" class="code">source code</a>
+    <p class="name"></p>
+  </div>
 
   
-  </body>
+</body>
 </html>
