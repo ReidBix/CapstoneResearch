@@ -1,0 +1,8 @@
+title: Capstoneresearch
+description: Looking at Post Quantum Cryptography and its applications to Bitcoin and other Cryptocurrencies
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-hacker
+
+gems:
+  - jekyll-mentions
